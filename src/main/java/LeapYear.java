@@ -8,6 +8,7 @@ public class LeapYear {
     } else {
       return year % 4 == 0;
     }
+
   }
 
 }

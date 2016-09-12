@@ -1,13 +1,30 @@
-import java.io.Console;
+import java.util.Map;
+import java.util.HashMap;
+import spark.ModelAndView;
+import spark.template.velocity.VelocityTemplateEngine;
+import static spark.Spark.*;
 
 public class App {
   public static void main(String[] args) {
-    Console myConsole = System.console();
-    System.out.println("Enter a year, we'll tell you if it's a leap year:");
-    String stringYear = myConsole.readLine();
-    int intYear = Integer.parseInt(stringYear);
-    LeapYear leapYear = new LeapYear();
-    boolean leapYearResult = leapYear.isLeapYear(intYear);
-    System.out.println("Is that year a leap year? " + leapYearResult);
+    staticFileLocation("/public");
+    String layout = "templates/layout.vtl";
+
+    get("/", (request, response) -> {
+      Map<String, Object> model = new HashMap<String, Object>();
+      model.put("template", "templates/form.vtl");
+      return new ModelAndView(model, layout);
+    }, new VelocityTemplateEngine());
+
+    get("/index", (request, response) -> {
+      Map<String, Object> model = new HashMap<String, Object>();
+      Integer year = Integer.parseInt(request.queryParams("year"));
+      LeapYear leapYear = new LeapYear();
+      boolean output = leapYear.isLeapYear(year);
+      model.put("output", output);
+      model.put("year", year);
+      model.put("template", "templates/index.vtl");
+      return new ModelAndView(model, layout);
+    }, new VelocityTemplateEngine());
+
   }
 }
